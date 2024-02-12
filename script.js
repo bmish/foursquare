@@ -1,5 +1,6 @@
 const { readFileSync, writeFileSync, existsSync } = require("fs");
 const { join } = require("path");
+const { writeCSV } = require("./csv");
 const sdk = require("api")("@fsq-developer/v1.0#18rps1flohmmndw");
 
 // Load environment variables.
@@ -95,7 +96,8 @@ const { venues, checkinsMissingVenues } =
 
 retrieveVenueDetails(venues, process.env.LIMIT).then(
   ({ venuesFromAPI, irretrievableVenues }) => {
-    const json = JSON.stringify([...venuesFromAPI.values()]);
+    const venuesFromAPIArray = [...venuesFromAPI.values()];
+    const json = JSON.stringify(venuesFromAPIArray);
     const pathToGeneratedVenues = join(pathDataExport, "generated-venues.json");
     writeFileSync(pathToGeneratedVenues, json, "utf8");
     console.log("Saved venues to", pathToGeneratedVenues);
@@ -109,6 +111,13 @@ retrieveVenueDetails(venues, process.env.LIMIT).then(
       join(pathDataExport, "generated-irretrievable-venues.csv"),
       irretrievableVenues.join(","),
       "utf8",
+    );
+
+    writeCSV(
+      venuesFromAPIArray,
+      pathDataExport,
+      "generated-venues",
+      process.env.PAGE_SIZE || Number.MAX_VALUE,
     );
   },
 );

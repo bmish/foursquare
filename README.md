@@ -49,16 +49,18 @@ FSQ_PLACES_API_KEY=your_places_api_key PATH_DATA_EXPORT=./data-export-123 node s
 The following files will be generated in the provided data export folder:
 
 * `generated-venues.json` with a list of all your check-in venues
+* `generated-venues.csv` with a list of all your check-in venues
 * `generated-irretrievable-checkins.csv` with any check-ins that did not have associated venues, possibly because the venue has been deleted
 * `generated-irretrievable-venues.csv` with any venues that could be not retrieved from the API, possibly because the venue is private, or another unknown reason (TODO: see this [thread](https://discord.com/channels/1002230925935005747/1205607917513085039/1205607918976892948) about why the API is returning "invalid venue specified" for a large number of venues)
 
 For testing purposes, a `LIMIT` environment variable can be set to limit the number of venues to be retrieved from the Foursquare API.
 
+Optionally use the `PAGE_SIZE` environment variable to choose how many rows to include in each CSV file. No limit by default.
+
 **Warning**: This will use some of your Foursquare developer account budget/credits. Each venue/places API request costs 5 credits. You get 200,000 ($200) free credits per month.
 
 ## Future / TODO
 
-* Support generating results as either CSV or JSON
 * Customizable output file path
 * Convert to TypeScript
 * Add a CLI command
