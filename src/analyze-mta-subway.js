@@ -1,6 +1,6 @@
 const { readFileSync, existsSync } = require("fs");
 const { join } = require("path");
-const { writeCSV } = require("./csv");
+const { writeCSV } = require("./utils/csv");
 
 // Load environment variables.
 const pathDataExport = process.env.PATH_DATA_EXPORT;

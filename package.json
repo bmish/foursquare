@@ -5,7 +5,8 @@
   "private": true,
   "main": "script.js",
   "scripts": {
-    "analyze-mta-subway": "node analyze-mta-subway.js",
+    "analyze-mta-subway": "node ./src/analyze-mta-subway.js",
+    "generate-venues": "node ./src/generate-venues.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

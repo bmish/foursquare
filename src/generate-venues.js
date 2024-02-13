@@ -1,6 +1,6 @@
 const { readFileSync, writeFileSync, existsSync } = require("fs");
 const { join } = require("path");
-const { writeCSV } = require("./csv");
+const { writeCSV } = require("./utils/csv");
 const sdk = require("api")("@fsq-developer/v1.0#18rps1flohmmndw");
 
 // Load environment variables.

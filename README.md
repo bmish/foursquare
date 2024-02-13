@@ -43,7 +43,7 @@ Clone this repository with `git clone`.
 Run the following command from inside this project folder. Be sure to fill-in the environment variables with your [API key](#api-key) and the path to the folder of the [exported data request](#data-request) from Foursquare:
 
 ```sh
-FSQ_PLACES_API_KEY=your_places_api_key PATH_DATA_EXPORT=./data-export-123 node script.js
+FSQ_PLACES_API_KEY=your_places_api_key PATH_DATA_EXPORT=./data-export-123 npm run generate-venues
 ```
 
 The following files will be generated in the provided data export folder:
