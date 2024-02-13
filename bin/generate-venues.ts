@@ -1,7 +1,10 @@
-const { readFileSync, writeFileSync, existsSync } = require("fs");
-const { join } = require("path");
-const { writeCSV } = require("./utils/csv");
-const sdk = require("api")("@fsq-developer/v1.0#18rps1flohmmndw");
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
+import { writeCSV } from "../utils/csv.js";
+import { Checkin, Venue } from "../utils/types.js";
+import api from "api";
+
+const sdk = api("@fsq-developer/v1.0#18rps1flohmmndw");
 
 // Load environment variables.
 const fsqPlacesApiKey = process.env.FSQ_PLACES_API_KEY;
@@ -18,9 +21,12 @@ if (!pathDataExport) {
   process.exit(1);
 }
 
-function loadVenuesFromDataRequest(pathDataExport) {
-  const venues = new Set();
-  const checkinsMissingVenues = [];
+function loadVenuesFromDataRequest(pathDataExport: string): {
+  venues: Set<string>;
+  checkinsMissingVenues: string[];
+} {
+  const venues = new Set<string>();
+  const checkinsMissingVenues: string[] = [];
 
   let page = 1;
   // eslint-disable-next-line no-constant-condition
@@ -31,7 +37,7 @@ function loadVenuesFromDataRequest(pathDataExport) {
       break;
     }
     const file = readFileSync(pathToJSON, "utf8");
-    const json = JSON.parse(file);
+    const json: { items: Checkin[] } = JSON.parse(file);
 
     // Go through all checkins in this page.
     for (const item of json.items) {
@@ -55,9 +61,15 @@ function loadVenuesFromDataRequest(pathDataExport) {
   return { venues, checkinsMissingVenues };
 }
 
-async function retrieveVenueDetails(venues, limit = Number.MAX_VALUE) {
-  const venuesFromAPI = new Map();
-  const irretrievableVenues = [];
+async function retrieveVenueDetails(
+  venues: Set<string>,
+  limit = Number.MAX_VALUE,
+): Promise<{
+  venuesFromAPI: Map<string, Venue>;
+  irretrievableVenues: string[];
+}> {
+  const venuesFromAPI = new Map<string, Venue>();
+  const irretrievableVenues: string[] = [];
 
   const { default: pLimit } = await import("p-limit");
   const limitRequests = pLimit(3); // Roughly satisfy the max 50 QPS allowed: https://location.foursquare.com/developer/reference/rate-limits
@@ -74,8 +86,8 @@ async function retrieveVenueDetails(venues, limit = Number.MAX_VALUE) {
     await limitRequests(async () => {
       await sdk
         .placeDetails({ fsq_id })
-        .then(({ data }) => venuesFromAPI.set(fsq_id, data))
-        .catch((err) => {
+        .then(({ data }: { data: Venue }) => venuesFromAPI.set(fsq_id, data))
+        .catch((err: { data: string }) => {
           console.error(err.data);
           irretrievableVenues.push(fsq_id);
         });
@@ -94,30 +106,31 @@ async function retrieveVenueDetails(venues, limit = Number.MAX_VALUE) {
 const { venues, checkinsMissingVenues } =
   loadVenuesFromDataRequest(pathDataExport);
 
-retrieveVenueDetails(venues, process.env.LIMIT).then(
-  ({ venuesFromAPI, irretrievableVenues }) => {
-    const venuesFromAPIArray = [...venuesFromAPI.values()];
-    const json = JSON.stringify(venuesFromAPIArray);
-    const pathToGeneratedVenues = join(pathDataExport, "generated-venues.json");
-    writeFileSync(pathToGeneratedVenues, json, "utf8");
-    console.log("Saved venues to", pathToGeneratedVenues);
+retrieveVenueDetails(
+  venues,
+  process.env.LIMIT ? Number(process.env.LIMIT) : undefined,
+).then(({ venuesFromAPI, irretrievableVenues }) => {
+  const venuesFromAPIArray = [...venuesFromAPI.values()];
+  const json = JSON.stringify(venuesFromAPIArray);
+  const pathToGeneratedVenues = join(pathDataExport, "generated-venues.json");
+  writeFileSync(pathToGeneratedVenues, json, "utf8");
+  console.log("Saved venues to", pathToGeneratedVenues);
 
-    writeFileSync(
-      join(pathDataExport, "generated-irretrievable-checkins.csv"),
-      checkinsMissingVenues.join(","),
-      "utf8",
-    );
-    writeFileSync(
-      join(pathDataExport, "generated-irretrievable-venues.csv"),
-      irretrievableVenues.join(","),
-      "utf8",
-    );
+  writeFileSync(
+    join(pathDataExport, "generated-irretrievable-checkins.csv"),
+    checkinsMissingVenues.join(","),
+    "utf8",
+  );
+  writeFileSync(
+    join(pathDataExport, "generated-irretrievable-venues.csv"),
+    irretrievableVenues.join(","),
+    "utf8",
+  );
 
-    writeCSV(
-      venuesFromAPIArray,
-      pathDataExport,
-      "generated-venues",
-      process.env.PAGE_SIZE || Number.MAX_VALUE,
-    );
-  },
-);
+  writeCSV(
+    venuesFromAPIArray,
+    pathDataExport,
+    "generated-venues",
+    process.env.PAGE_SIZE ? Number(process.env.PAGE_SIZE) : Number.MAX_VALUE,
+  );
+});

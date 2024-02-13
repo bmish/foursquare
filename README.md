@@ -34,9 +34,23 @@ Create a project.
 
 Generate a "Places API Key".
 
-### Clone
+### Repository
 
-Clone this repository with `git clone`.
+Retrieve this repository:
+
+```sh
+git clone ...
+```
+
+From inside the repository folder:
+
+```sh
+npm install
+```
+
+```sh
+npm run build
+```
 
 ## Usage
 
@@ -62,7 +76,6 @@ Optionally use the `PAGE_SIZE` environment variable to choose how many rows to i
 ## Future / TODO
 
 * Customizable output file path
-* Convert to TypeScript
 * Add a CLI command
 * Publish this on NPM
 
