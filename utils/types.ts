@@ -1,4 +1,3 @@
-
 /** Based on the Foursquare API. */
 export type Checkin = {
   id: string;
