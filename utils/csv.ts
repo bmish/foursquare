@@ -1,7 +1,8 @@
-const { writeFileSync } = require("fs");
-const { join } = require("path");
+import { writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { Venue } from "./types.js";
 
-function linesToFile(lines) {
+function linesToFile(lines: string[]): string {
   const file = [
     ["Name", "Latitude", "Longitude", "Address"].join(","),
     ...lines,
@@ -10,11 +11,11 @@ function linesToFile(lines) {
   return file;
 }
 
-function writeCSV(
-  venues,
-  pathFolder,
-  pathFilenameWithoutExtension,
-  pageSize = Number.MAX_VALUE,
+export function writeCSV(
+  venues: Venue[],
+  pathFolder: string,
+  pathFilenameWithoutExtension: string,
+  pageSize: number = Number.MAX_VALUE,
 ) {
   const lines = venues.flatMap((venue) => {
     if (!venue.geocodes.main) {
@@ -54,5 +55,3 @@ function writeCSV(
     }
   }
 }
-
-module.exports = { writeCSV };

@@ -1,11 +1,12 @@
 "use strict";
 
-const js = require("@eslint/js");
-const eslintPluginPrettierRecommended = require("eslint-plugin-prettier/recommended");
-const globals = require("globals");
+import eslint from "@eslint/js";
+import tseslint from "typescript-eslint";
+import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 
-module.exports = [
-  js.configs.recommended,
+export default tseslint.config(
+  eslint.configs.recommended,
+  ...tseslint.configs.recommended,
   eslintPluginPrettierRecommended,
-  { languageOptions: { globals: { ...globals.node } } },
-];
+  { ignores: ["node_modules", "dist"] },
+);

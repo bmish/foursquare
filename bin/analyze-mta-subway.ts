@@ -1,6 +1,7 @@
-const { readFileSync, existsSync } = require("fs");
-const { join } = require("path");
-const { writeCSV } = require("./utils/csv");
+import { readFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
+import { writeCSV } from "../utils/csv.js";
+import { Venue } from "../utils/types.js";
 
 // Load environment variables.
 const pathDataExport = process.env.PATH_DATA_EXPORT;
@@ -9,15 +10,15 @@ if (!pathDataExport) {
   process.exit(1);
 }
 
-function loadStations(pathDataExport) {
+function loadStations(pathDataExport: string): { stations: Venue[] } {
   const pathToJSON = join(pathDataExport, `generated-venues.json`);
   if (!existsSync(pathToJSON)) {
     console.error("Missing generated-venues.json");
-    return;
+    return { stations: [] };
   }
 
   const file = readFileSync(pathToJSON, "utf8");
-  const venues = JSON.parse(file);
+  const venues: Venue[] = JSON.parse(file);
   const stations = venues.filter((venue) => {
     if (
       venue.categories.length > 0 &&
@@ -37,15 +38,18 @@ function loadStations(pathDataExport) {
     ) {
       return true;
     }
+
+    return false;
   });
 
   return { stations };
 }
 
 const { stations } = loadStations(pathDataExport);
+
 writeCSV(
   stations,
   pathDataExport,
   "generated-stations",
-  process.env.PAGE_SIZE || Number.MAX_VALUE,
+  process.env.PAGE_SIZE ? Number(process.env.PAGE_SIZE) : Number.MAX_VALUE,
 );

@@ -3,23 +3,27 @@
   "version": "0.0.0",
   "description": "",
   "private": true,
-  "main": "script.js",
+  "type": "module",
   "scripts": {
-    "analyze-mta-subway": "node ./src/analyze-mta-subway.js",
-    "generate-venues": "node ./src/generate-venues.js",
+    "build": "tsc",
+    "analyze-mta-subway": "ts-node ./dist/bin/analyze-mta-subway.js",
+    "generate-venues": "ts-node ./dist/bin/generate-venues.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "api": "^6.1.1",
-    "p-limit": "^5.0.0"
+    "p-limit": "^5.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   },
   "devDependencies": {
     "@eslint/js": "^8.56.0",
+    "@types/node": "^20.11.17",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
-    "globals": "^13.24.0"
+    "typescript-eslint": "^7.0.1"
   }
 }
