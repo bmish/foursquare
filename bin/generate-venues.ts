@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { writeCSV } from "../utils/csv.js";
@@ -87,8 +89,8 @@ async function retrieveVenueDetails(
       await sdk
         .placeDetails({ fsq_id })
         .then(({ data }: { data: Venue }) => venuesFromAPI.set(fsq_id, data))
-        .catch((err: { data: string }) => {
-          console.error(err.data);
+        .catch((error: { data: string }) => {
+          console.error(error.data);
           irretrievableVenues.push(fsq_id);
         });
     });
@@ -106,31 +108,31 @@ async function retrieveVenueDetails(
 const { venues, checkinsMissingVenues } =
   loadVenuesFromDataRequest(pathDataExport);
 
-retrieveVenueDetails(
+const { venuesFromAPI, irretrievableVenues } = await retrieveVenueDetails(
   venues,
   process.env.LIMIT ? Number(process.env.LIMIT) : undefined,
-).then(({ venuesFromAPI, irretrievableVenues }) => {
-  const venuesFromAPIArray = [...venuesFromAPI.values()];
-  const json = JSON.stringify(venuesFromAPIArray);
-  const pathToGeneratedVenues = join(pathDataExport, "generated-venues.json");
-  writeFileSync(pathToGeneratedVenues, json, "utf8");
-  console.log("Saved venues to", pathToGeneratedVenues);
+);
 
-  writeFileSync(
-    join(pathDataExport, "generated-irretrievable-checkins.csv"),
-    checkinsMissingVenues.join(","),
-    "utf8",
-  );
-  writeFileSync(
-    join(pathDataExport, "generated-irretrievable-venues.csv"),
-    irretrievableVenues.join(","),
-    "utf8",
-  );
+const venuesFromAPIArray = [...venuesFromAPI.values()];
+const json = JSON.stringify(venuesFromAPIArray);
+const pathToGeneratedVenues = join(pathDataExport, "generated-venues.json");
+writeFileSync(pathToGeneratedVenues, json, "utf8");
+console.log("Saved venues to", pathToGeneratedVenues);
 
-  writeCSV(
-    venuesFromAPIArray,
-    pathDataExport,
-    "generated-venues",
-    process.env.PAGE_SIZE ? Number(process.env.PAGE_SIZE) : Number.MAX_VALUE,
-  );
-});
+writeFileSync(
+  join(pathDataExport, "generated-irretrievable-checkins.csv"),
+  checkinsMissingVenues.join(","),
+  "utf8",
+);
+writeFileSync(
+  join(pathDataExport, "generated-irretrievable-venues.csv"),
+  irretrievableVenues.join(","),
+  "utf8",
+);
+
+writeCSV(
+  venuesFromAPIArray,
+  pathDataExport,
+  "generated-venues",
+  process.env.PAGE_SIZE ? Number(process.env.PAGE_SIZE) : Number.MAX_VALUE,
+);

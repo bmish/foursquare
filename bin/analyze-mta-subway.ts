@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { writeCSV } from "../utils/csv.js";
@@ -21,7 +23,6 @@ function loadStations(pathDataExport: string): { stations: Venue[] } {
   const venues: Venue[] = JSON.parse(file);
   const stations = venues.filter((venue) => {
     if (
-      venue.categories.length > 0 &&
       venue.categories.some((category) => category.name === "Sandwich Spot")
     ) {
       // Ignore Subway fast food restaurant.

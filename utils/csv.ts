@@ -38,16 +38,19 @@ export function writeCSV(
     console.log("Wrote to", path);
   } else {
     const splits = Math.ceil(lines.length / pageSize);
-    for (let i = 0; i < splits; i++) {
+    for (let index = 0; index < splits; index++) {
       const splitFile = linesToFile(
-        lines.slice(i * pageSize, (i + 1) * pageSize),
+        lines.slice(index * pageSize, (index + 1) * pageSize),
       );
       const path = join(
         pathFolder,
-        pathFilenameWithoutExtension + "-" + (i + 1) + ".csv",
+        pathFilenameWithoutExtension + "-" + (index + 1) + ".csv",
       );
       writeFileSync(
-        join(pathFolder, pathFilenameWithoutExtension + "-" + (i + 1) + ".csv"),
+        join(
+          pathFolder,
+          pathFilenameWithoutExtension + "-" + (index + 1) + ".csv",
+        ),
         splitFile,
         "utf8",
       );
