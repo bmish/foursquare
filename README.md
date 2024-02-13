@@ -81,7 +81,9 @@ Optionally use the `PAGE_SIZE` environment variable to choose how many rows to i
 
 ## Special Analysis
 
-### MTA Subway Stations
+### MTA NYC Subway Stations
+
+One-off analysis script for testing and demonstration purposes.
 
 ```sh
 PATH_DATA_EXPORT=./data-export-123 npm run analyze-mta-subway
