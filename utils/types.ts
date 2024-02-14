@@ -13,4 +13,5 @@ export type Venue = {
   location: { formatted_address: string };
   categories: { name: string }[];
   chains: { name: string }[];
+  related_places?: { children?: unknown[] };
 };

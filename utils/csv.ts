@@ -1,46 +1,38 @@
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { Venue } from "./types.js";
+import { json2csv } from "json-2-csv";
 
-function linesToFile(lines: string[]): string {
-  const file = [
-    ["Name", "Latitude", "Longitude", "Address"].join(","),
-    ...lines,
-  ].join("\n");
+async function jsonToCsvHelper(venues: Venue[]): Promise<string> {
+  // Delete all the nested stuff under related_places which is excessive and not very relevant.
+  // Workaround this issue with `excludeKeys`: https://github.com/mrodrig/json-2-csv/issues/244
+  venues = venues.map((venue) => {
+    delete venue.related_places;
+    return venue;
+  });
 
-  return file;
+  const csv = await json2csv(venues, {
+    expandArrayObjects: true,
+  });
+  return csv;
 }
 
-export function writeCSV(
+export async function writeCSV(
   venues: Venue[],
   pathFolder: string,
   pathFilenameWithoutExtension: string,
   pageSize: number = Number.MAX_VALUE,
 ) {
-  const lines = venues.flatMap((venue) => {
-    if (!venue.geocodes.main) {
-      return [];
-    }
-    return [
-      [
-        venue.name.includes(",") ? `"${venue.name}"` : venue.name,
-        venue.geocodes.main.latitude,
-        venue.geocodes.main.longitude,
-        `"${venue.location.formatted_address}"`,
-      ].join(","),
-    ];
-  });
-
-  if (lines.length < pageSize) {
+  if (venues.length < pageSize) {
+    const csv = await jsonToCsvHelper(venues);
     const path = join(pathFolder, pathFilenameWithoutExtension + ".csv");
-
-    writeFileSync(path, linesToFile(lines), "utf8");
+    writeFileSync(path, csv, "utf8");
     console.log("Wrote to", path);
   } else {
-    const splits = Math.ceil(lines.length / pageSize);
+    const splits = Math.ceil(venues.length / pageSize);
     for (let index = 0; index < splits; index++) {
-      const splitFile = linesToFile(
-        lines.slice(index * pageSize, (index + 1) * pageSize),
+      const csv = await jsonToCsvHelper(
+        venues.slice(index * pageSize, (index + 1) * pageSize),
       );
       const path = join(
         pathFolder,
@@ -51,7 +43,7 @@ export function writeCSV(
           pathFolder,
           pathFilenameWithoutExtension + "-" + (index + 1) + ".csv",
         ),
-        splitFile,
+        csv,
         "utf8",
       );
       console.log("Wrote to", path);

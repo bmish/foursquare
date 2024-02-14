@@ -88,3 +88,5 @@ One-off analysis script for testing and demonstration purposes.
 ```sh
 PATH_DATA_EXPORT=./data-export-123 npm run analyze-mta-subway
 ```
+
+Creates `generated-stations.csv`.
