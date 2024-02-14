@@ -79,7 +79,7 @@ Optionally use the `PAGE_SIZE` environment variable to choose how many rows to i
 * Add a CLI command
 * Publish this on NPM
 
-## Special Analysis
+## Test Scripts
 
 ### MTA NYC Subway Stations
 
@@ -90,3 +90,11 @@ PATH_DATA_EXPORT=./data-export-123 npm run analyze-mta-subway
 ```
 
 Creates `generated-stations.csv`.
+
+### Venues to CSV
+
+Regenerating the CSV file from `generated-venues.json` which may be useful during development.
+
+```sh
+npm run generated-venues-to-csv
+```

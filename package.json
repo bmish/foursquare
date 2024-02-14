@@ -10,6 +10,7 @@
     "analyze-mta-subway": "ts-node ./dist/bin/analyze-mta-subway.js",
     "build": "tsc",
     "generate-venues": "ts-node ./dist/bin/generate-venues.js",
+    "generated-venues-to-csv": "ts-node ./dist/bin/generated-venues-to-csv.js",
     "lint": "npm-run-all --continue-on-error --aggregate-output --parallel \"lint:*\"",
     "lint:docs": "markdownlint \"**/*.md\"",
     "lint:docs:fix": "npm run lint:docs -- --fix",
