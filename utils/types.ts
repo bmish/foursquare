@@ -9,7 +9,7 @@ export type Checkin = {
 export type Venue = {
   id: string;
   name: string;
-  geocodes: { main?: { latitude: number; longitude: number } };
+  geocodes?: { main?: { latitude: number; longitude: number } };
   location: { formatted_address: string };
   categories: { name: string }[];
   chains: { name: string }[];
