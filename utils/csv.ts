@@ -5,10 +5,6 @@ import { json2csv } from "json-2-csv";
 
 async function jsonToCsvHelper(venues: Venue[]): Promise<string> {
   venues = venues.map((venue) => {
-    // Delete all the nested stuff under related_places which is excessive and not very relevant.
-    // Workaround this issue with `excludeKeys`: https://github.com/mrodrig/json-2-csv/issues/244
-    delete venue.related_places;
-
     if (Object.keys(venue.geocodes || {}).length === 0) {
       // Workaround this issue where empty object causes a new JSON-filled column for the object to be included: https://github.com/mrodrig/json-2-csv/issues/168#issuecomment-1018020690
       delete venue.geocodes;
@@ -19,6 +15,7 @@ async function jsonToCsvHelper(venues: Venue[]): Promise<string> {
 
   const csv = await json2csv(venues, {
     expandArrayObjects: true,
+    excludeKeys: ["related_places"],
   });
   return csv;
 }
